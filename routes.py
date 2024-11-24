@@ -9,16 +9,12 @@ def init_app(app, db):
 
     @app.route('/index')
     def list_carros():
-        connection = db.get_connection()
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM CARROS')
-        carros = cursor.fetchall()
+        # Buscando carros e clientes no MongoDB
+        carros_collection = db.get_collection("CARROS")
+        clientes_collection = db.get_collection("CLIENTES")
 
-        cursor.execute('SELECT * FROM CLIENTES')
-        clientes = cursor.fetchall()
-
-        cursor.close()
-        connection.close()
+        carros = list(carros_collection.find())
+        clientes = list(clientes_collection.find())
 
         return render_template('index.html', carros=carros, clientes=clientes)
 
@@ -29,28 +25,29 @@ def init_app(app, db):
         marca = request.form['marca']
         disponibilidade = request.form.get('disponibilidade', 'off') == 'on'
 
-        connection = db.get_connection()
-        cursor = connection.cursor()
-
-        cursor.execute(
-            'INSERT INTO CARROS (MODELO, ANO, MARCA, DISPONIBILIDADE) VALUES (%s, %s, %s, %s)',
-            (modelo, ano, marca, disponibilidade)
-        )
-        connection.commit()
-        cursor.close()
-        connection.close()
+        # Inserindo carro na coleção CARROS do MongoDB
+        carros_collection = db.get_collection("CARROS")
+        carros_collection.insert_one({
+            "MODELO": modelo,
+            "ANO": ano,
+            "MARCA": marca,
+            "DISPONIBILIDADE": disponibilidade
+        })
 
         return redirect(url_for('list_carros'))
 
     @app.route('/delete_carro/<int:carro_id>', methods=['POST'])
     def delete_carro(carro_id):
-        connection = db.get_connection()
-        cursor = connection.cursor()
-        cursor.execute('DELETE FROM LOCACAO WHERE ID_CARRO = %s', (carro_id,))
-        cursor.execute('DELETE FROM CARROS WHERE ID = %s', (carro_id,))
-        connection.commit()
-        cursor.close()
-        connection.close()
+        # Deletando o carro da coleção CARROS e as locações associadas no MongoDB
+        carros_collection = db.get_collection("CARROS")
+        locacao_collection = db.get_collection("LOCACAO")
+
+        # Deletando locação associada ao carro
+        locacao_collection.delete_many({'ID_CARRO': carro_id})
+
+        # Deletando o carro
+        carros_collection.delete_one({'ID': carro_id})
+
         return redirect(url_for('list_carros'))
 
     @app.route('/edit_carro/<int:carro_id>', methods=['GET', 'POST'])
@@ -62,115 +59,98 @@ def init_app(app, db):
             disponibilidade = request.form.get(
                 'disponibilidade', 'off') == 'on'
 
-            connection = db.get_connection()
-            cursor = connection.cursor()
-            cursor.execute(
-                'UPDATE CARROS SET MODELO = %s, ANO = %s, MARCA = %s, DISPONIBILIDADE = %s WHERE ID = %s',
-                (modelo, ano, marca, disponibilidade, carro_id)
+            # Atualizando carro no MongoDB
+            carros_collection = db.get_collection("CARROS")
+            carros_collection.update_one(
+                {'ID': carro_id},
+                {'$set': {'MODELO': modelo, 'ANO': ano, 'MARCA': marca,
+                          'DISPONIBILIDADE': disponibilidade}}
             )
-            connection.commit()
-            cursor.close()
-            connection.close()
 
             return redirect(url_for('list_carros'))
 
-        connection = db.get_connection()
-        cursor = connection.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM CARROS WHERE ID = %s', (carro_id,))
-        carro = cursor.fetchone()
-        cursor.close()
-        connection.close()
+        # Buscando carro específico no MongoDB
+        carros_collection = db.get_collection("CARROS")
+        carro = carros_collection.find_one({'ID': carro_id})
 
         return render_template('edit.html', carro=carro)
 
     @app.route('/alugar_carro/<int:carro_id>', methods=['POST'])
     def alugar_carro(carro_id):
-        connection = db.get_connection()
-        cursor = connection.cursor(dictionary=True)
-
+        # Coletando dados do formulário
         cliente_id = request.form.get('id_cliente')
         data_locacao = request.form.get('data_locacao')
         data_retorno = request.form.get('data_retorno')
         valor_diaria = request.form.get('valor_diaria')
 
-        try:
-            cursor.execute(
-                "SELECT DISPONIBILIDADE FROM CARROS WHERE ID = %s", (carro_id,))
-            disponibilidade = cursor.fetchone()
+        # Conectando às coleções
+        carros_collection = db.get_collection("CARROS")
+        locacao_collection = db.get_collection("LOCACAO")
 
-            if not disponibilidade:
-                return "O carro não foi encontrado."
+        # Verificando disponibilidade do carro
+        carro = carros_collection.find_one({'ID': carro_id})
+        if not carro:
+            return "O carro não foi encontrado."
+        if not carro['DISPONIBILIDADE']:
+            return "O carro já está alugado ou indisponível."
 
-            if not disponibilidade['DISPONIBILIDADE']:
-                return "O carro já está alugado ou indisponível."
+        # Inserindo a locação no MongoDB
+        locacao_collection.insert_one({
+            'ID_CARRO': carro_id,
+            'ID_CLIENTE': cliente_id,
+            'DATA_LOCACAO': data_locacao,
+            'DATA_RETORNO': data_retorno,
+            'VALOR_DIARIA': valor_diaria
+        })
 
-            cursor.execute(
-                """INSERT INTO LOCACAO (ID_CARRO, ID_CLIENTE, DATA_LOCACAO, DATA_RETORNO, VALOR_DIARIA) 
-                VALUES (%s, %s, %s, %s, %s)""",
-                (carro_id, cliente_id, data_locacao, data_retorno, valor_diaria)
-            )
-            connection.commit()
+        # Atualizando a disponibilidade do carro
+        carros_collection.update_one(
+            {'ID': carro_id},
+            {'$set': {'DISPONIBILIDADE': False}}
+        )
 
-            cursor.execute(
-                "UPDATE CARROS SET DISPONIBILIDADE = FALSE WHERE ID = %s", (carro_id,))
-            connection.commit()
-
-            return redirect(url_for('list_carros'))
-
-        except Exception as e:
-            connection.rollback()
-            return f"Ocorreu um erro: {str(e)}"
-
-        finally:
-            cursor.close()
-            connection.close()
+        return redirect(url_for('list_carros'))
 
     @app.route('/devolver_carro/<int:carro_id>', methods=['POST'])
     def devolver_carro(carro_id):
         disponibilidade = request.form.get('disponibilidade') == 'on'
 
-        connection = db.get_connection()
-        cursor = connection.cursor()
+        # Atualizando disponibilidade do carro
+        carros_collection = db.get_collection("CARROS")
+        carros_collection.update_one(
+            {'ID': carro_id},
+            {'$set': {'DISPONIBILIDADE': disponibilidade}}
+        )
 
-        try:
-            if disponibilidade:
-                cursor.execute(
-                    "UPDATE CARROS SET DISPONIBILIDADE = TRUE WHERE ID = %s", (carro_id,))
-            else:
-                cursor.execute(
-                    "UPDATE CARROS SET DISPONIBILIDADE = FALSE WHERE ID = %s", (carro_id,))
-            connection.commit()
-
-            return redirect(url_for('list_carros'))
-
-        except Exception as e:
-            connection.rollback()
-            return f"Ocorreu um erro ao devolver o carro: {str(e)}"
-
-        finally:
-            cursor.close()
-            connection.close()
+        return redirect(url_for('list_carros'))
 
     @app.route('/relatorios')
     def list_reservas():
-        connection = db.get_connection()
-        cursor = connection.cursor(dictionary=True)
+        # Buscando relatórios de locações no MongoDB
+        locacao_collection = db.get_collection("LOCACAO")
+        carros_collection = db.get_collection("CARROS")
+        clientes_collection = db.get_collection("CLIENTES")
 
-        cursor.execute("""
-            SELECT CARROS.ID AS carro_id, CARROS.MODELO, CARROS.ANO, CARROS.MARCA,
-                   CLIENTES.NOME AS cliente_nome, CLIENTES.ID AS cliente_id
-            FROM LOCACAO
-            JOIN CARROS ON LOCACAO.ID_CARRO = CARROS.ID
-            JOIN CLIENTES ON LOCACAO.ID_CLIENTE = CLIENTES.ID
-            WHERE CARROS.DISPONIBILIDADE = FALSE
-        """)
-        reservas = cursor.fetchall()
+        reservas = list(locacao_collection.aggregate([
+            {
+                '$lookup': {
+                    'from': 'CARROS',
+                    'localField': 'ID_CARRO',
+                    'foreignField': 'ID',
+                    'as': 'carro_info'
+                }
+            },
+            {
+                '$lookup': {
+                    'from': 'CLIENTES',
+                    'localField': 'ID_CLIENTE',
+                    'foreignField': 'ID',
+                    'as': 'cliente_info'
+                }
+            },
+            {'$match': {'carro_info.DISPONIBILIDADE': False}}
+        ]))
 
-        cursor.execute('SELECT COUNT(*) AS total FROM LOCACAO')
-
-        total_locacoes = cursor.fetchone()['total']
-
-        cursor.close()
-        connection.close()
+        total_locacoes = locacao_collection.count_documents({})
 
         return render_template('relatorios.html', reservas=reservas, total_locacoes=total_locacoes)

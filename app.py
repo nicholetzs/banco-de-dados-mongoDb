@@ -1,7 +1,5 @@
-# app.py ou __init__.py
-
 from flask import Flask
-from mySqlConnection import MySql  # Classe para conexão MySQL
+from mySql import MySql  # Classe para conexão MySQL
 from mongo import MongoDB  # Classe para conexão MongoDB
 from transfer import transfer_all  # Funções de transferência
 from config import Config  # Configurações gerais
