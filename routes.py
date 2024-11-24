@@ -1,7 +1,9 @@
 from flask import render_template, request, redirect, url_for
+from flask import jsonify
+from transfer import transfer_all
 
 
-def init_app(app, db):
+def init_app(app, mysql_db, mongo_db):
     @app.route('/')
     def index():
         # Exibindo a splash screen com informações sobre nossa locadora
@@ -10,13 +12,27 @@ def init_app(app, db):
     @app.route('/index')
     def list_carros():
         # Buscando carros e clientes no MongoDB
-        carros_collection = db.get_collection("CARROS")
-        clientes_collection = db.get_collection("CLIENTES")
+        carros_collection = mongo_db.get_collection("carros")
+        clientes_collection = mongo_db.get_collection("clientes")
 
         carros = list(carros_collection.find())
         clientes = list(clientes_collection.find())
 
         return render_template('index.html', carros=carros, clientes=clientes)
+
+    @app.route('/transfer', methods=['POST'])
+    def migrate_data():
+        """
+        Rota para executar a migração de dados do MySQL para o MongoDB.
+        """
+        try:
+            # Definindo as tabelas a serem migradas
+            tables = ["CARROS", "CLIENTES", "LOCACAO"]
+            # Executando a transferência
+            transfer_all(mysql_db, mongo_db, tables)
+            return jsonify({"message": "Migração concluída com sucesso!"}), 200
+        except Exception as e:
+            return jsonify({"error": f"Erro durante a migração: {str(e)}"}), 500
 
     @app.route('/add_carro', methods=['POST'])
     def add_carro():
@@ -26,7 +42,7 @@ def init_app(app, db):
         disponibilidade = request.form.get('disponibilidade', 'off') == 'on'
 
         # Inserindo carro na coleção CARROS do MongoDB
-        carros_collection = db.get_collection("CARROS")
+        carros_collection = mongo_db.get_collection("carros")
         carros_collection.insert_one({
             "MODELO": modelo,
             "ANO": ano,
@@ -39,8 +55,8 @@ def init_app(app, db):
     @app.route('/delete_carro/<int:carro_id>', methods=['POST'])
     def delete_carro(carro_id):
         # Deletando o carro da coleção CARROS e as locações associadas no MongoDB
-        carros_collection = db.get_collection("CARROS")
-        locacao_collection = db.get_collection("LOCACAO")
+        carros_collection = mongo_db.get_collection("carros")
+        locacao_collection = mongo_db.get_collection("locacao")
 
         # Deletando locação associada ao carro
         locacao_collection.delete_many({'ID_CARRO': carro_id})
@@ -60,7 +76,7 @@ def init_app(app, db):
                 'disponibilidade', 'off') == 'on'
 
             # Atualizando carro no MongoDB
-            carros_collection = db.get_collection("CARROS")
+            carros_collection = mongo_db.get_collection("carros")
             carros_collection.update_one(
                 {'ID': carro_id},
                 {'$set': {'MODELO': modelo, 'ANO': ano, 'MARCA': marca,
@@ -70,7 +86,7 @@ def init_app(app, db):
             return redirect(url_for('list_carros'))
 
         # Buscando carro específico no MongoDB
-        carros_collection = db.get_collection("CARROS")
+        carros_collection = mongo_db.get_collection("carros")
         carro = carros_collection.find_one({'ID': carro_id})
 
         return render_template('edit.html', carro=carro)
@@ -84,8 +100,8 @@ def init_app(app, db):
         valor_diaria = request.form.get('valor_diaria')
 
         # Conectando às coleções
-        carros_collection = db.get_collection("CARROS")
-        locacao_collection = db.get_collection("LOCACAO")
+        carros_collection = mongo_db.get_collection("carros")
+        locacao_collection = mongo_db.get_collection("locacao")
 
         # Verificando disponibilidade do carro
         carro = carros_collection.find_one({'ID': carro_id})
@@ -116,7 +132,7 @@ def init_app(app, db):
         disponibilidade = request.form.get('disponibilidade') == 'on'
 
         # Atualizando disponibilidade do carro
-        carros_collection = db.get_collection("CARROS")
+        carros_collection = mongo_db.get_collection("CARROS")
         carros_collection.update_one(
             {'ID': carro_id},
             {'$set': {'DISPONIBILIDADE': disponibilidade}}
@@ -127,14 +143,14 @@ def init_app(app, db):
     @app.route('/relatorios')
     def list_reservas():
         # Buscando relatórios de locações no MongoDB
-        locacao_collection = db.get_collection("LOCACAO")
-        carros_collection = db.get_collection("CARROS")
-        clientes_collection = db.get_collection("CLIENTES")
+        locacao_collection = mongo_db.get_collection("locacao")
+        carros_collection = mongo_db.get_collection("carros")
+        clientes_collection = mongo_db.get_collection("clientes")
 
         reservas = list(locacao_collection.aggregate([
             {
                 '$lookup': {
-                    'from': 'CARROS',
+                    'from': 'carros',
                     'localField': 'ID_CARRO',
                     'foreignField': 'ID',
                     'as': 'carro_info'
@@ -142,15 +158,18 @@ def init_app(app, db):
             },
             {
                 '$lookup': {
-                    'from': 'CLIENTES',
+                    'from': 'clientes',
                     'localField': 'ID_CLIENTE',
                     'foreignField': 'ID',
                     'as': 'cliente_info'
                 }
             },
-            {'$match': {'carro_info.DISPONIBILIDADE': False}}
+
         ]))
 
         total_locacoes = locacao_collection.count_documents({})
+
+        # Verifique a estrutura de 'reservas' no terminal
+        print("Reservas: ", reservas)
 
         return render_template('relatorios.html', reservas=reservas, total_locacoes=total_locacoes)

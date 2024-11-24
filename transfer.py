@@ -2,6 +2,17 @@
 from utils import convert_data_types
 
 
+def transfer_all(mysql_db, mongo_db, tables):
+    """
+    Transfere os dados de várias tabelas do MySQL para o MongoDB.
+    :param mysql_db: Instância da classe Database para conexão com o MySQL.
+    :param mongo_db: Instância da classe MongoDB para acesso à coleção.
+    :param tables: Lista de nomes de tabelas no MySQL.
+    """
+    for table in tables:
+        transfer_table(mysql_db, mongo_db, table)
+
+
 def transfer_table(mysql_db, mongo_db, table_name):
     """
     Transfere os dados de uma tabela do MySQL para uma coleção no MongoDB.
@@ -57,14 +68,3 @@ def transfer_table(mysql_db, mongo_db, table_name):
     finally:
         if mysql_conn:
             mysql_conn.close()
-
-
-def transfer_all(mysql_db, mongo_db, tables):
-    """
-    Transfere os dados de várias tabelas do MySQL para o MongoDB.
-    :param mysql_db: Instância da classe Database para conexão com o MySQL.
-    :param mongo_db: Instância da classe MongoDB para acesso à coleção.
-    :param tables: Lista de nomes de tabelas no MySQL.
-    """
-    for table in tables:
-        transfer_table(mysql_db, mongo_db, table)

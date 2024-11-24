@@ -1,5 +1,4 @@
 # run.py
-
 from app import create_app  # Importa a função create_app do arquivo app.py
 
 if __name__ == '__main__':

@@ -148,11 +148,28 @@
               <tbody>
                 {% for reserva in reservas %}
                 <tr class="border-b border-gray-200 hover:bg-gray-100">
-                  <td class="px-4 py-3">{{ reserva.carro_id }}</td>
-                  <td class="px-4 py-3">{{ reserva.MODELO }}</td>
-                  <td class="px-4 py-3">{{ reserva.ANO }}</td>
-                  <td class="px-4 py-3">{{ reserva.MARCA }}</td>
-                  <td class="px-4 py-3">{{ reserva.cliente_nome }}</td>
+                  <td class="px-4 py-3">{{ reserva.ID_CARRO }}</td>
+                  <!-- ID do Carro -->
+                  <td class="px-4 py-3">
+                    {{ reserva.carro_info[0].MODELO if reserva.carro_info else
+                    'N/A' }}
+                  </td>
+                  <!-- Modelo -->
+                  <td class="px-4 py-3">
+                    {{ reserva.carro_info[0].ANO if reserva.carro_info else
+                    'N/A' }}
+                  </td>
+                  <!-- Ano -->
+                  <td class="px-4 py-3">
+                    {{ reserva.carro_info[0].MARCA if reserva.carro_info else
+                    'N/A' }}
+                  </td>
+                  <!-- Marca -->
+                  <td class="px-4 py-3">
+                    {{ reserva.cliente_info[0].NOME if reserva.cliente_info else
+                    'N/A' }}
+                  </td>
+                  <!-- Nome do Cliente -->
                 </tr>
                 {% endfor %}
               </tbody>

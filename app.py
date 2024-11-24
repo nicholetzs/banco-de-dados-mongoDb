@@ -1,7 +1,7 @@
 from flask import Flask
 from mySql import MySql  # Classe para conexão MySQL
 from mongo import MongoDB  # Classe para conexão MongoDB
-from transfer import transfer_all  # Funções de transferência
+from routes import init_app  # Rotas da aplicação
 from config import Config  # Configurações gerais
 
 
@@ -23,8 +23,6 @@ def create_app():
         database=app.config['MONGO_DATABASE']
     )
 
-    # Transferindo dados entre MySQL e MongoDB
-    tables = ["CARROS", "CLIENTES", "LOCACAO"]
-    transfer_all(mysql_db, mongo_db, tables)
-
+    # Inicializa as rotas, passando as conexões necessárias
+    init_app(app, mysql_db, mongo_db)
     return app
