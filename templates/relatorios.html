@@ -4,179 +4,347 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AutoRent - Sistema de Reservas</title>
-    <!-- Tailwind CSS CDN -->
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome CDN -->
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              customPurple: "#6B46C1",
-              customBlue: "#3B82F6",
-            },
-          },
-        },
-      };
-    </script>
   </head>
-  <body class="bg-gray-100">
-    <div class="flex h-screen">
+  <body class="bg-gray-900">
+    <div class="d-flex">
       <!-- Sidebar -->
-      <nav
-        class="bg-indigo-900 shadow-lg w-64 h-full flex flex-col justify-between"
+      <aside
+        class="fixed left-4 top-4 bottom-4 z-50 w-64 rounded-2xl bg-gray-900 shadow-lg transition-all duration-300 ease-in-out dark:bg-gray-800"
       >
-        <div class="px-4 py-6">
-          <div class="flex items-center mb-8">
-            <span class="text-3xl font-bold text-purple-400 mr-2">
-              <i class="fas fa-car-side"></i>
-            </span>
-            <span class="text-2xl font-bold text-purple-300">AutoRent</span>
+        <nav class="h-full flex flex-col justify-between p-4">
+          <div>
+            <div class="mb-8 flex items-center justify-center">
+              <svg
+                class="h-10 w-10 text-indigo-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 18h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                ></path>
+              </svg>
+              <span
+                class="ml-3 text-xl font-semibold text-gray-800 dark:text-white"
+                >AutoRent</span
+              >
+            </div>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center rounded-lg p-2 text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                >
+                  <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                    ></path>
+                  </svg>
+                  <span class="ml-3">Início</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{{ url_for('list_carros') }}"
+                  class="flex items-center rounded-lg p-2 text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                >
+                  <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    ></path>
+                  </svg>
+                  <span class="ml-3">Carros</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center rounded-lg p-2 text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                >
+                  <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  <span class="ml-3">Sobre</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center rounded-lg p-2 text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                >
+                  <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    ></path>
+                  </svg>
+                  <span class="ml-3">Contato</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{{ url_for('list_reservas') }}"
+                  class="flex items-center rounded-lg p-2 text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                >
+                  <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                    ></path>
+                  </svg>
+                  <span class="ml-3">Relatórios</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="flex items-center rounded-lg p-2 text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
+                >
+                  <svg
+                    class="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                  </svg>
+                  <span class="ml-3">Localizações</span>
+                </a>
+              </li>
+            </ul>
           </div>
-          <div class="flex flex-col space-y-2">
-            <a
-              href="#"
-              class="flex items-center text-purple-200 hover:bg-indigo-800 hover:text-white rounded-lg p-2 transition duration-300"
+          <div class="mt-auto">
+            <div
+              class="flex items-center space-x-4 rounded-lg bg-gray-100 p-4 dark:bg-gray-700"
             >
-              <i class="fas fa-home mr-3 w-5 text-center"></i>
-              <span>Início</span>
-            </a>
-            <a
-              href="/index"
-              class="flex items-center text-purple-200 hover:bg-indigo-800 hover:text-white rounded-lg p-2 transition duration-300"
-            >
-              <i class="fas fa-car mr-3 w-5 text-center"></i>
-              <span>Carros</span>
-            </a>
-
-            <a
-              href="#"
-              class="flex items-center text-purple-200 hover:bg-indigo-800 hover:text-white rounded-lg p-2 transition duration-300"
-            >
-              <i class="fas fa-info-circle mr-3 w-5 text-center"></i>
-              <span>Sobre</span>
-            </a>
-            <a
-              href="#"
-              class="flex items-center text-purple-200 hover:bg-indigo-800 hover:text-white rounded-lg p-2 transition duration-300"
-            >
-              <i class="fas fa-phone mr-3 w-5 text-center"></i>
-              <span>Contato</span>
-            </a>
-            <a
-              href="{{ url_for('list_reservas') }}"
-              class="flex items-center text-purple-200 hover:bg-indigo-800 hover:text-white rounded-lg p-2 transition duration-300"
-            >
-              <i class="fas fa-calendar-alt mr-3 w-5 text-center"></i>
-              <span>Relatórios</span>
-            </a>
-            <a
-              href="#"
-              class="flex items-center text-purple-200 hover:bg-indigo-800 hover:text-white rounded-lg p-2 transition duration-300"
-            >
-              <i class="fas fa-map-marker-alt mr-3 w-5 text-center"></i>
-              <span>Localizações</span>
-            </a>
-          </div>
-        </div>
-        <div class="px-4 py-4 bg-indigo-950">
-          <div class="flex items-center mb-4">
-            <img
-              src="/static/img/saturn.jpeg"
-              alt="Avatar do Usuário"
-              class="w-10 h-10 rounded-full mr-3"
-            />
-            <div>
-              <p class="text-sm font-medium text-purple-300">
-                Nichole Nicolini
-              </p>
-              <p class="text-xs text-purple-400">Administrador</p>
+              <img
+                src="/static/img/saturn.jpeg"
+                alt="User Avatar"
+                class="h-10 w-10 rounded-full"
+              />
+              <div>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  Nichole Nicolini
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  Administrador
+                </p>
+              </div>
+            </div>
+            <div class="mt-4 flex justify-between">
+              <button
+                class="rounded p-2 text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+              >
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  ></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  ></path>
+                </svg>
+              </button>
+              <button
+                class="rounded p-2 text-gray-600 hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white"
+              >
+                <svg
+                  class="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  ></path>
+                </svg>
+              </button>
             </div>
           </div>
-          <div class="flex justify-between">
-            <button
-              class="text-purple-300 hover:text-white transition duration-300"
-            >
-              <i class="fas fa-cog"></i>
-            </button>
-            <button
-              class="text-purple-300 hover:text-white transition duration-300"
-            >
-              <i class="fas fa-sign-out-alt"></i>
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <!-- Conteúdo Principal -->
-      <main class="flex-1 overflow-y-auto p-8">
+        </nav>
+      </aside>
+      <!-- Main Content -->
+      <main class="flex-grow p-8 ml-64">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">
           Reservas de Carros
         </h1>
 
-        <div class="container mx-auto p-4">
-          <h1 class="text-2xl font-bold mb-4">Resumo de Reservas</h1>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Total de Locações -->
-            <div class="bg-blue-100 p-4 rounded-lg shadow">
-              <h2 class="font-semibold text-lg">Total de Locações</h2>
-              <p class="text-2xl">{{ total_locacoes }}</p>
-            </div>
+        <!-- Floating Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-gray-800 rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">
+              Total de Locações
+            </h3>
+            <p class="text-3xl font-bold text-blue-600">25</p>
+          </div>
+          <div class="bg-gray-800 rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">
+              Receita Total
+            </h3>
+            <p class="text-3xl font-bold text-green-600">R$ 2.500,00</p>
+          </div>
+          <div class="bg-gray-800 rounded-lg shadow-md p-6">
+            <h3 class="text-lg font-medium text-gray-600 mb-2">
+              Carros Disponíveis
+            </h3>
+            <p class="text-3xl font-bold text-yellow-600">15</p>
           </div>
         </div>
 
-        <!-- Tabela de Reservas -->
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full table-auto">
-              <thead
-                class="bg-gradient-to-r from-customPurple to-customBlue text-white"
-              >
-                <tr>
-                  <th class="px-4 py-3 text-left">ID do Carro</th>
-                  <th class="px-4 py-3 text-left">Modelo</th>
-                  <th class="px-4 py-3 text-left">Ano</th>
-                  <th class="px-4 py-3 text-left">Marca</th>
-                  <th class="px-4 py-3 text-left">Nome do Cliente</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for reserva in reservas %}
-                <tr class="border-b border-gray-200 hover:bg-gray-100">
-                  <td class="px-4 py-3">{{ reserva.ID_CARRO }}</td>
-                  <!-- ID do Carro -->
-                  <td class="px-4 py-3">
-                    {{ reserva.carro_info[0].MODELO if reserva.carro_info else
-                    'N/A' }}
-                  </td>
-                  <!-- Modelo -->
-                  <td class="px-4 py-3">
-                    {{ reserva.carro_info[0].ANO|int if reserva.carro_info else
-                    'N/A' }}
-                  </td>
-
-                  <!-- Ano -->
-                  <td class="px-4 py-3">
-                    {{ reserva.carro_info[0].MARCA if reserva.carro_info else
-                    'N/A' }}
-                  </td>
-                  <!-- Marca -->
-                  <td class="px-4 py-3">
-                    {{ reserva.cliente_info[0].NOME if reserva.cliente_info else
-                    'N/A' }}
-                  </td>
-
-                  <!-- Nome do Cliente -->
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+        <!-- Reservations Table -->
+        <div class="bg-gray-800 rounded-lg shadow-md overflow-hidden">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50 text-gray-600 text-sm uppercase">
+                <th class="px-6 py-3 text-left font-medium">ID do Carro</th>
+                <th class="px-6 py-3 text-left font-medium">Modelo</th>
+                <th class="px-6 py-3 text-left font-medium">Ano</th>
+                <th class="px-6 py-3 text-left font-medium">Marca</th>
+                <th class="px-6 py-3 text-left font-medium">Nome do Cliente</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  1
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  Civic
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  2022
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  Honda
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  João Silva
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  2
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  Corolla
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  2021
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  Toyota
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  Maria Santos
+                </td>
+              </tr>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  3
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  Golf
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  2023
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  Volkswagen
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
+                  Pedro Oliveira
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </main>
     </div>
