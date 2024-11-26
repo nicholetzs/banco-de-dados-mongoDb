@@ -1,4 +1,3 @@
-# Importando a função de conversão de tipos de dados
 from utils import convert_data_types
 
 
@@ -32,31 +31,21 @@ def transfer_table(mysql_db, mongo_db, table_name):
             # Convertendo os tipos de dados dos registros antes de inserir no MongoDB
             converted_rows = [convert_data_types(record) for record in rows]
 
-            # Inserindo ou atualizando dados no MongoDB usando upsert
+            # Inserindo dados no MongoDB (sem referência direta ao campo `ID`)
             collection = mongo_db.get_collection(
                 table_name.lower())  # Coleção com nome da tabela
-            print(f"Inserindo ou atualizando {len(converted_rows)} registros na coleção {
+            print(f"Inserindo {len(converted_rows)} registros na coleção {
                   table_name.lower()} no MongoDB...")
 
             for record in converted_rows:
-                # A chave primária será o campo "ID", e não o "_id" do MongoDB
-                result = collection.update_one(
-                    {"ID": record["ID"]},  # Critério de busca pelo campo "ID"
-                    # Atualiza o documento com os novos dados
-                    {"$set": record},
-                    upsert=True             # Se não encontrar o "ID", insere o documento
-                )
+                # Salvar o ID original do MySQL em `mysql_id` (opcional)
+                if "ID" in record:
+                    record["mysql_id"] = record.pop("ID")
 
-                # Verificando se o documento foi inserido ou atualizado
-                if result.upserted_id is not None:
-                    # Registro inserido
-                    print(f"ID {record['ID']} inserido no MongoDB.")
-                elif result.modified_count > 0:
-                    # Registro atualizado
-                    print(f"ID {record['ID']} atualizado no MongoDB.")
-                else:
-                    # Nenhuma alteração
-                    print(f"ID {record['ID']} já existe e não foi alterado.")
+                # Inserir o registro com `_id` gerado automaticamente pelo MongoDB
+                result = collection.insert_one(record)
+                print(f"Registro inserido com _id {
+                      result.inserted_id} no MongoDB.")
 
             print(f"Transferência da tabela {
                   table_name} concluída com sucesso!")

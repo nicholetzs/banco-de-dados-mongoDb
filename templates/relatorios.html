@@ -156,9 +156,10 @@
                   </td>
                   <!-- Modelo -->
                   <td class="px-4 py-3">
-                    {{ reserva.carro_info[0].ANO if reserva.carro_info else
+                    {{ reserva.carro_info[0].ANO|int if reserva.carro_info else
                     'N/A' }}
                   </td>
+
                   <!-- Ano -->
                   <td class="px-4 py-3">
                     {{ reserva.carro_info[0].MARCA if reserva.carro_info else
