@@ -165,19 +165,29 @@ def init_app(app, mysql_db, mongo_db):
         clientes_collection = mongo_db.get_collection("clientes")
 
         reservas = list(locacao_collection.aggregate([
+            # Converte 'ID_CLIENTE' para 'ObjectId', se necessário
+            {
+                '$addFields': {
+                    'ID_CLIENTE': {
+                        '$toObjectId': '$ID_CLIENTE'
+                    }
+                }
+            },
+            # Fazendo o lookup para trazer as informações do carro
             {
                 '$lookup': {
                     'from': 'carros',
                     'localField': 'ID_CARRO',
-                    'foreignField': '_id',  # Usando _id para fazer lookup
+                    'foreignField': '_id',
                     'as': 'carro_info'
                 }
             },
+            # Fazendo o lookup para trazer as informações do cliente
             {
                 '$lookup': {
                     'from': 'clientes',
                     'localField': 'ID_CLIENTE',
-                    'foreignField': '_id',  # Usando _id para fazer lookup
+                    'foreignField': '_id',
                     'as': 'cliente_info'
                 }
             }
