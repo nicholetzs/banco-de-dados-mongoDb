@@ -99,11 +99,18 @@ def alugar_carro(mongo_db, carro_id):
 
 
 def devolver_carro(mongo_db, carro_id):
-    carro_id = ObjectId(carro_id)
-    disponibilidade = request.form.get('disponibilidade') == 'on'
-
+    # Conectando ao banco de dados
+    locacao_collection = mongo_db.get_collection("locacao")
     carros_collection = mongo_db.get_collection("carros")
-    carros_collection.update_one(
-        {'_id': carro_id}, {'$set': {'DISPONIBILIDADE': disponibilidade}})
 
+    # Remover a locação associada ao carro
+    locacao_collection.delete_one({'ID_CARRO': ObjectId(carro_id)})
+
+    # Atualizar o carro para marcar como "disponível"
+    carros_collection.update_one(
+        {'_id': ObjectId(carro_id)},
+        {'$set': {'DISPONIBILIDADE': True}}
+    )
+
+    # Redireciona de volta para a página de relatórios ou onde você desejar
     return redirect(url_for('list_carros_route'))
