@@ -30,7 +30,7 @@ def init_app(app, mysql_db, mongo_db):
     def alugar_carro_route(carro_id):
         return alugar_carro(mongo_db, carro_id)
 
-    @app.route('/transfer', methods=['POST'])
+    @app.route('/transfer', methods=['GET'])
     def migrate_data_route():
         return migrate_data(mysql_db, mongo_db)
 
