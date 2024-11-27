@@ -253,9 +253,7 @@
       </aside>
       <!-- Main Content -->
       <main class="flex-grow p-8 ml-64">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">
-          Reservas de Carros
-        </h1>
+        <h1 class="text-3xl font-bold text-white mb-6">Reservas de Carros</h1>
 
         <!-- Floating Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -263,86 +261,50 @@
             <h3 class="text-lg font-medium text-gray-600 mb-2">
               Total de Locações
             </h3>
-            <p class="text-3xl font-bold text-blue-600">25</p>
-          </div>
-          <div class="bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">
-              Receita Total
-            </h3>
-            <p class="text-3xl font-bold text-green-600">R$ 2.500,00</p>
-          </div>
-          <div class="bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 class="text-lg font-medium text-gray-600 mb-2">
-              Carros Disponíveis
-            </h3>
-            <p class="text-3xl font-bold text-yellow-600">15</p>
+            <p class="text-2xl text-bold text-red-400">{{ total_locacoes }}</p>
           </div>
         </div>
 
         <!-- Reservations Table -->
-        <div class="bg-gray-800 rounded-lg shadow-md overflow-hidden">
-          <table class="w-full">
+        <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+          <table class="w-full text-left">
             <thead>
-              <tr class="bg-gray-50 text-gray-600 text-sm uppercase">
-                <th class="px-6 py-3 text-left font-medium">ID do Carro</th>
-                <th class="px-6 py-3 text-left font-medium">Modelo</th>
-                <th class="px-6 py-3 text-left font-medium">Ano</th>
-                <th class="px-6 py-3 text-left font-medium">Marca</th>
-                <th class="px-6 py-3 text-left font-medium">Nome do Cliente</th>
+              <tr
+                class="bg-gray-900 text-gray-400 text-sm uppercase tracking-wide"
+              >
+                <th class="px-6 py-4 font-semibold">ID do Carro</th>
+                <th class="px-6 py-4 font-semibold">Modelo</th>
+                <th class="px-6 py-4 font-semibold">Ano</th>
+                <th class="px-6 py-4 font-semibold">Marca</th>
+                <th class="px-6 py-4 font-semibold">Nome do Cliente</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
-              <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  1
+            <tbody>
+              {% for reserva in reservas %}
+              <tr
+                class="border-b border-gray-700 hover:bg-gray-700 transition duration-200 ease-in-out"
+              >
+                <td class="px-6 py-4 text-white font-medium">
+                  {{ reserva.ID_CARRO }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  Civic
+                <td class="px-6 py-4 text-gray-300">
+                  {{ reserva.carro_info[0].MODELO if reserva.carro_info else
+                  'N/A' }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  2022
+                <td class="px-6 py-4 text-gray-300">
+                  {{ reserva.carro_info[0].ANO|int if reserva.carro_info else
+                  'N/A' }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  Honda
+                <td class="px-6 py-4 text-gray-300">
+                  {{ reserva.carro_info[0].MARCA if reserva.carro_info else
+                  'N/A' }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  João Silva
-                </td>
-              </tr>
-              <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  2
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  Corolla
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  2021
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  Toyota
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  Maria Santos
+                <td class="px-6 py-4 text-gray-300">
+                  {{ reserva.cliente_info[0].NOME if reserva.cliente_info else
+                  'N/A' }}
                 </td>
               </tr>
-              <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  3
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  Golf
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  2023
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  Volkswagen
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
-                  Pedro Oliveira
-                </td>
-              </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>
