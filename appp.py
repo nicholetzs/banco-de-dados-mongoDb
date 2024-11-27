@@ -1,7 +1,7 @@
 from flask import Flask
 from app.models.mySql import MySql  # Classe para conexão MySQL
 from app.models.mongo import MongoDB  # Classe para conexão MongoDB
-from app.routes import init_app  # Rotas da aplicação
+from app.routes import init_app  # Inicialização das rotas
 from config import Config  # Configurações gerais
 
 

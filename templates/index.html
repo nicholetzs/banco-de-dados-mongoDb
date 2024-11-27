@@ -162,7 +162,7 @@
               </li>
               <li>
                 <a
-                  href="{{ url_for('list_reservas') }}"
+                  href="{{ url_for('list_reservas_route') }}"
                   class="flex items-center rounded-lg p-2 text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                 >
                   <svg
@@ -468,7 +468,7 @@
                       </div>
                       <div class="modal-body relative p-4">
                         <form
-                          action="{{ url_for('alugar_carro', carro_id=carro._id) }}"
+                          action="{{ url_for('alugar_carro_route', carro_id=carro._id) }}"
                           method="post"
                           class="space-y-4"
                         >
@@ -719,7 +719,7 @@
                     </div>
                     <div class="modal-body relative p-8 overflow-y-auto">
                       <form
-                        action="/edit_carro/{{ carro._id }}"
+                        action="{{ url_for('edit_carro_route', carro_id=carro._id) }}"
                         method="post"
                         class="space-y-6"
                       >
@@ -791,7 +791,7 @@
                         </div>
                         <div class="flex items-center space-x-3">
                           <form
-                            action="{{ url_for('devolver_carro', carro_id=carro._id) }}"
+                            action="{{ url_for('devolver_carro_route', carro_id=carro._id) }}"
                             method="POST"
                           >
                             <input
@@ -869,7 +869,11 @@
                   ></button>
                 </div>
                 <div class="modal-body relative p-4">
-                  <form action="/add_carro" method="post" class="space-y-4">
+                  <form
+                    action="{{ url_for('add_carro_route') }}"
+                    method="post"
+                    class="space-y-4"
+                  >
                     <div>
                       <label
                         for="modelo"

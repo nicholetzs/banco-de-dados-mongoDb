@@ -4,11 +4,8 @@ from flask import Flask, render_template
 # 2. Importações de pacotes de terceiros (exemplo, se houver algum pacote externo)
 # from somepackage import some_module
 
-# 3. Importações do seu próprio projeto (first-party)
-from .controllers.carro_controller import list_carros, add_carro, delete_carro, edit_carro
-from .controllers.locacao_controller import alugar_carro, devolver_carro
-from .controllers.migracao_controller import migrate_data
-from .controllers.relatorios_controller import list_reservas
+from .controllers.carro_controller import list_carros, add_carro, delete_carro, edit_carro, alugar_carro, devolver_carro
+from .controllers.migracao_controller import migrate_data, list_reservas
 from app.models.mongo import MongoDB
 
 
