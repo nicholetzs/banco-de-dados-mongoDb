@@ -33,3 +33,11 @@ tests/
 __pycache__/
 *.pyc
 
+
+lib/python3.13/site-packages/
+
+# Ignorar arquivos de configuração do sistema
+.DS_Store
+Thumbs.db
+**/site-packages/
+
