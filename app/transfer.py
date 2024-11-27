@@ -1,4 +1,4 @@
-from utils import convert_data_types
+from app.utils.convert_data_types import convert_data_types
 
 
 def transfer_all(mysql_db, mongo_db, tables):
