@@ -1,58 +1,67 @@
-README para Rodar o Projeto DBAUTOCAR em Linux, no DBeaver
+Projeto de Carros - Aplicação Flask com MongoDB
 
-Copyright: Desenvolvido por Nichole Nicolini, Lucas Ferrari, Marlon Lacerda, Gustavo Trevezani e Fabricio Dias.
+Este é um projeto que implementa uma aplicação web para gerenciar carros, com funcionalidades de adicionar, editar e listar carros. A aplicação utiliza Flask como framework web e MongoDB como banco de dados.
 
-1. Baixando o Projeto
-
-	1.	Acesse o repositório do projeto no GitHub.
-	2.	Clique no botão Code e selecione Download ZIP.
-	3.	Após o download, extraia o arquivo ZIP em um diretório de sua escolha.
-
-2. Abrindo o Projeto no VS Code
-
-	1.	Abra o VS Code.
-	2.	No menu, clique em File > Open Folder….
-	3.	Selecione a pasta onde você extraiu o projeto.
-
-Agora, certifique-se de ter os seguintes pré-requisitos instalados dentro do ambiente virtual no VS Code:
-
-	•	Crie o ambiente virtual:
-
-python -m venv ./venv
+Dependências
+O projeto usa o Flask para o framework web e o pymongo para a integração com MongoDB. As dependências podem ser instaladas através do arquivo requirements.txt.
 
 
-	•	Ative o ambiente virtual no Linux:
+Como Rodar o Projeto
+Passo 1: Clonar o Repositório
+Primeiro, clone o repositório para a sua máquina local:
 
+bash
+Copiar código
+git clone <URL do repositório>
+cd my_project
+
+Passo 2: Criar e Ativar o Ambiente Virtual
+É altamente recomendado usar um ambiente virtual para evitar conflitos de dependências. Para criar e ativar o ambiente virtual, execute os seguintes comandos:
+
+No Windows:
+python -m venv venv
+.\venv\Scripts\activate
+
+No macOS/Linux:
+python3 -m venv venv
 source venv/bin/activate
 
+Passo 3: Instalar as Dependências
+Instale as dependências do projeto listadas no arquivo requirements.txt:
+pip install -r requirements.txt
 
-	•	Instale as dependências necessárias:
-	•	Python (preferencialmente a versão 3.7 ou superior)
-	•	pip (gerenciador de pacotes do Python)
-	•	MySQL:
+Passo 4: Configurar o MongoDB
+Certifique-se de que o MongoDB está instalado e em execução em sua máquina local ou em um servidor remoto. Se estiver usando o MongoDB Atlas ou outro serviço de banco de dados em nuvem, crie uma instância e obtenha a string de conexão.
 
-pip install mysql-connector-python
+Se você estiver utilizando MongoDB localmente, o URI de conexão será algo como:
 
+mongodb://localhost:27017
 
-	•	Flask:
-
-pip install flask
-
-
-
-	4.	Aperte CTRL + SHIFT + P, selecione o interpretador do ambiente virtual e dê um reload no VS Code.
-	5.	No terminal, execute o projeto:
-
-python app.py
+Passo 5: Configurar as Variáveis de Ambiente
+No arquivo app/config.py, altere a configuração para conectar com o seu banco de dados MongoDB. Exemplo de configuração:
 
 
-	
+# app/config.py
+class Config:
+    SECRET_KEY = 'mysecretkey'  # Para sessões e CSRF
+    MONGO_URI = "mongodb://localhost:27017/carros_db"  # Substitua pelo seu URI do MongoDB
+    
+Passo 6: Rodar o Servidor
+Depois de configurar o banco de dados, você pode rodar a aplicação com o seguinte comando:
+python run.py
+O servidor Flask estará disponível em http://127.0.0.1:5000/ ou http://localhost:5000/ no seu navegador.
 
-3. Configurando o Banco de Dados no DBeaver
+Passo 7: Interagir com a Aplicação
+Você pode acessar as funcionalidades da aplicação por meio das seguintes rotas:
+Ou você pode navegar normalmente pela aplicação! :)
 
-	1.	Conecte-se ao banco de dados labdatabase.
-	2.	Substitua o nome do banco de dados por DBAUTOCAR e ajuste os respectivos campos conforme o arquivo app.py.
-	3.	Teste a conexão no DBeaver.
-	4.	Rode os scripts para criar as tabelas e inserir os dados de carros e clientes.
+Página principal: http://localhost:5000/
+Adicionar carro: http://localhost:5000/add_carro
+Editar carro: http://localhost:5000/edit_carro/<carro_id>
+Deletar carro: http://localhost:5000/delete_carro/<carro_id>
+Funcionalidades
+Adicionar Carro: Permite adicionar um novo carro ao banco de dados.
+Editar Carro: Permite editar as informações de um carro existente.
+Listar Carros: Exibe todos os carros cadastrados.
+Deletar Carro: Exclui um carro da base de dados, caso ele não esteja vinculado a um cliente.
 
-Este documento deve ajudá-lo a configurar o projeto DBAUTOCAR corretamente no Linux usando o DBeaver e o VS Code.
