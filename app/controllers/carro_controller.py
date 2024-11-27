@@ -118,9 +118,9 @@ def devolver_carro(mongo_db, carro_id):
     )
 
     # Se o carro está sendo marcado como disponível (não alugado),
-    # devemos remover a locação correspondente.
+    # devemos remover a locação correspondente
     if disponibilidade:  # Se o carro está disponível, remova a locação associada
-        locacao_collection.delete_one({'_id': carro_id})
+        locacao_collection.delete_one({'ID_CARRO': carro_id})
 
     # Redireciona para a página de listagem de carros
     return redirect(url_for('list_carros_route'))
