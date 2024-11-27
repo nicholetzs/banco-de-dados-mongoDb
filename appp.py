@@ -2,7 +2,7 @@ from flask import Flask
 from app.models.mySql import MySql  # Classe para conexão MySQL
 from app.models.mongo import MongoDB  # Classe para conexão MongoDB
 from app.routes import init_app  # Inicialização das rotas
-from config import Config  # Configurações gerais
+from app.models.config import Config  # Configurações da aplicação
 
 
 def create_app():

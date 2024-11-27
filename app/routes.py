@@ -1,9 +1,5 @@
-# 1. Importações padrão
+# Um arquivo para as routes
 from flask import Flask, render_template
-
-# 2. Importações de pacotes de terceiros (exemplo, se houver algum pacote externo)
-# from somepackage import some_module
-
 from .controllers.carro_controller import list_carros, add_carro, delete_carro, edit_carro, alugar_carro, devolver_carro
 from .controllers.migracao_controller import migrate_data, list_reservas
 from app.models.mongo import MongoDB

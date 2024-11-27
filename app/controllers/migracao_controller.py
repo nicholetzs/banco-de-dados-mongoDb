@@ -1,6 +1,6 @@
 from flask import jsonify
-from ..transfer import transfer_all
 from flask import render_template
+from app.utils.transfer import transfer_all
 
 
 def migrate_data(mysql_db, mongo_db):
