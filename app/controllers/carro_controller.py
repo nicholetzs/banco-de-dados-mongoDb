@@ -1,3 +1,6 @@
+from datetime import datetime
+from flask import request, redirect, url_for
+from bson import ObjectId
 from flask import render_template, request, redirect, url_for
 from bson.objectid import ObjectId
 from app.models.mongo import MongoDB
@@ -99,18 +102,25 @@ def alugar_carro(mongo_db, carro_id):
 
 
 def devolver_carro(mongo_db, carro_id):
-    # Conectando ao banco de dados
-    locacao_collection = mongo_db.get_collection("locacao")
+    carro_id = ObjectId(carro_id)
+
+    # Verifica a disponibilidade que veio do formulário (checkbox)
+    disponibilidade = request.form.get('disponibilidade') == 'on'
+
+    # Coleções do MongoDB
     carros_collection = mongo_db.get_collection("carros")
+    locacao_collection = mongo_db.get_collection("locacao")
 
-    # Remover a locação associada ao carro
-    locacao_collection.delete_one({'ID_CARRO': ObjectId(carro_id)})
-
-    # Atualizar o carro para marcar como "disponível"
+    # Atualiza a disponibilidade do carro
     carros_collection.update_one(
-        {'_id': ObjectId(carro_id)},
-        {'$set': {'DISPONIBILIDADE': True}}
+        {'_id': carro_id},
+        {'$set': {'DISPONIBILIDADE': disponibilidade}}
     )
 
-    # Redireciona de volta para a página de relatórios ou onde você desejar
+    # Se o carro está sendo marcado como disponível (não alugado),
+    # devemos remover a locação correspondente.
+    if disponibilidade:  # Se o carro está disponível, remova a locação associada
+        locacao_collection.delete_one({'ID_CARRO': carro_id})
+
+    # Redireciona para a página de listagem de carros
     return redirect(url_for('list_carros_route'))
