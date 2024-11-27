@@ -23,7 +23,7 @@ def add_carro(mongo_db):
     modelo = request.form['modelo']
     ano = request.form['ano']
     marca = request.form['marca']
-    disponibilidade = request.form.get('disponibilidade', 'off') == 'on'
+    disponibilidade = request.form.get('disponibilidade', 'on') == 'on'
 
     carros_collection = mongo_db.get_collection("carros")
     carros_collection.insert_one({
@@ -50,21 +50,34 @@ def delete_carro(mongo_db, carro_id):
 def edit_carro(mongo_db, carro_id):
     carro_id = ObjectId(carro_id)
 
+    # Quando o formulário for submetido (POST)
     if request.method == 'POST':
         modelo = request.form['modelo']
         ano = request.form['ano']
         marca = request.form['marca']
+
+        # Verifica se a disponibilidade foi marcada como 'on'
         disponibilidade = request.form.get('disponibilidade', 'off') == 'on'
 
         carros_collection = mongo_db.get_collection("carros")
+        locacao_collection = mongo_db.get_collection("locacao")
+
+        # Atualiza as informações do carro na coleção de carros
         carros_collection.update_one(
             {'_id': carro_id},
             {'$set': {'MODELO': modelo, 'ANO': ano, 'MARCA': marca,
                       'DISPONIBILIDADE': disponibilidade}}
         )
 
+        # Se o carro foi marcado como disponível, exclui a locação associada
+        if disponibilidade:
+            # Remove todas as locações onde o ID do carro seja igual ao carro editado
+            locacao_collection.delete_many({'ID_CARRO': carro_id})
+
+        # Redireciona para a lista de carros após a edição
         return redirect(url_for('list_carros_route'))
 
+    # Caso o método seja GET, apenas exibe a página de edição
     carros_collection = mongo_db.get_collection("carros")
     carro = carros_collection.find_one({'_id': carro_id})
 
@@ -98,29 +111,4 @@ def alugar_carro(mongo_db, carro_id):
     carros_collection.update_one(
         {'_id': carro_id}, {'$set': {'DISPONIBILIDADE': False}})
 
-    return redirect(url_for('list_carros_route'))
-
-
-def devolver_carro(mongo_db, carro_id):
-    carro_id = ObjectId(carro_id)
-
-    # Verifica a disponibilidade que veio do formulário (checkbox)
-    disponibilidade = request.form.get('disponibilidade') == 'on'
-
-    # Coleções do MongoDB
-    carros_collection = mongo_db.get_collection("carros")
-    locacao_collection = mongo_db.get_collection("locacao")
-
-    # Atualiza a disponibilidade do carro
-    carros_collection.update_one(
-        {'_id': carro_id},
-        {'$set': {'DISPONIBILIDADE': disponibilidade}}
-    )
-
-    # Se o carro está sendo marcado como disponível (não alugado),
-    # devemos remover a locação correspondente
-    if disponibilidade:  # Se o carro está disponível, remova a locação associada
-        locacao_collection.delete_one({'ID_CARRO': carro_id})
-
-    # Redireciona para a página de listagem de carros
     return redirect(url_for('list_carros_route'))
